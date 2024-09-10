@@ -41,7 +41,7 @@ async function addFeedbacks(req, res) {
 
 async function getFeedbacks(req, res) {
   try {
-    const feedbacks = await Feedback.find({});
+    const feedbacks = await Feedback.find({}).sort({ createdAt: -1 });  
     res.json(feedbacks);
   } catch (error) {
     console.error("Error fetching Feedbacks: ", error);
