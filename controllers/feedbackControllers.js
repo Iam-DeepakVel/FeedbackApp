@@ -2,46 +2,39 @@ import Feedback from "../models/Feedback.js";
 
 async function addFeedbacks(req, res) {
   try {
-    const feedbacks = req.body;
+    const { feedback } = req.body;
 
-    const savedFeedbacks = [];
+    const { email, feedbackText, rating } = feedback;
 
-    for (const feedback of feedbacks) {
-      const { email, feedbackText, rating } = feedback;
+    const isExisting = await Feedback.findOne({
+      email,
+      feedbackText,
+      rating,
+    });
 
-      const isExisting = await Feedback.findOne({
+    if (!isExisting) {
+      const feedback = await Feedback.create({
         email,
         feedbackText,
         rating,
       });
 
-      if (!isExisting) {
-        const feedback = await Feedback.create({
-          email,
-          feedbackText,
-          rating,
-        });
-
-        savedFeedbacks.push(feedback);
-      }
+      return res.status(201).json({
+        message: `Feedback ${feedback.feedbackText} saved successfully`,
+      });
     }
 
-    if (savedFeedbacks.length === 0) {
-      return res.json({ message: "No feedbacks to add!" });
-    }
-
-    res.status(201).json({
-      message: `${savedFeedbacks.length} feedbacks added successfully`,
-      addedFeedbacks: savedFeedbacks,
+    res.status(200).json({
+      message: `Feedback ${feedbackText} Already Exists`,
     });
-  } catch (error) {
-    console.error("Error adding Feedbacks: ", error);
-  }
+} catch (error) {
+  console.error("Error adding Feedbacks: ", error);
+}
 }
 
 async function getFeedbacks(req, res) {
   try {
-    const feedbacks = await Feedback.find({}).sort({ createdAt: -1 });  
+    const feedbacks = await Feedback.find({}).sort({ createdAt: -1 });
     res.json(feedbacks);
   } catch (error) {
     console.error("Error fetching Feedbacks: ", error);
