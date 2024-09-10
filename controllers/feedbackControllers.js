@@ -1,6 +1,7 @@
 import Feedback from "../models/Feedback.js";
 
 async function addFeedbacks(req, res) {
+  console.log(req.body)
   try {
     const { feedback } = req.body;
 
